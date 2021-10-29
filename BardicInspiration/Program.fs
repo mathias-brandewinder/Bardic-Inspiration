@@ -2,9 +2,11 @@ namespace Archipendulum.BardicInspiration
 
 module Program =
 
+    open System.Threading.Tasks
     open System.IO
     open Microsoft.Extensions.Configuration
     open DSharpPlus
+    open DSharpPlus.CommandsNext
 
     let appConfig =
         ConfigurationBuilder()
@@ -22,5 +24,19 @@ module Program =
         config.TokenType <- TokenType.Bot
 
         let client = new DiscordClient(config)
+
+        let commandsConfig = CommandsNextConfiguration ()
+        commandsConfig.StringPrefixes <- ["/"]
+
+        let commands = client.UseCommandsNext(commandsConfig)
+        commands.RegisterCommands<BardBot>()
+
+        client.ConnectAsync()
+        |> Async.AwaitTask
+        |> Async.RunSynchronously
+
+        Task.Delay(-1)
+        |> Async.AwaitTask
+        |> Async.RunSynchronously
 
         1
