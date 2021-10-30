@@ -23,15 +23,15 @@ module Program =
         config.Token <- token
         config.TokenType <- TokenType.Bot
 
-        let client = new DiscordClient(config)
+        let discord = new DiscordClient(config)
 
         let commandsConfig = CommandsNextConfiguration ()
         commandsConfig.StringPrefixes <- ["/"]
 
-        let commands = client.UseCommandsNext(commandsConfig)
+        let commands = discord.UseCommandsNext(commandsConfig)
         commands.RegisterCommands<BardBot>()
 
-        client.ConnectAsync()
+        discord.ConnectAsync()
         |> Async.AwaitTask
         |> Async.RunSynchronously
 
