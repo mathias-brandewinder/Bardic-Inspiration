@@ -10,18 +10,20 @@ type BardBot () =
 
     inherit BaseCommandModule ()
 
-    [<Command>]
-    let inspiration (ctx: CommandContext) =
+    [<Command "inspire">]
+    [<Description "Cast bardic inspiration on someone!">]
+    member this.Inspiration (ctx: CommandContext, [<Description "Who do you want to inspire?">] user: DiscordMember) =
         unitTask {
             do!
                 ctx.TriggerTypingAsync()
 
-            let rng = Random ()
-            let emoji =
-                DiscordEmoji.FromName(ctx.Client, ":game_die:").ToString()
+            let emoji = DiscordEmoji.FromName(ctx.Client, ":drum:").Name
+            let roll = Random().Next(1, 7)
+            let userName = user.Mention
 
-            rng.Next(1, 7)
-            |> sprintf "%s Bardic Inspiration! Add %i to your next ability check, attack, or saving throw." emoji
-            |> ctx.RespondAsync
-            |> ignore
+            let! _ =
+                sprintf "%s Bardic Inspiration! %s, add %i (1d6) to your next ability check, attack, or saving throw." emoji userName roll
+                |> ctx.RespondAsync
+
+            return ()
             }
