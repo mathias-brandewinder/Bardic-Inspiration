@@ -22,7 +22,7 @@ type BardBot () =
             let userName = user.Mention
 
             let! _ =
-                sprintf "%s Bardic Inspiration! %s, add %i (1d6) to your next ability check, attack, or saving throw." emoji userName roll
+                $"{emoji} Bardic Inspiration! {userName}, add {roll} (1d6) to your next ability check, attack, or saving throw."
                 |> ctx.RespondAsync
 
             return ()
