@@ -7,6 +7,8 @@ module Program =
     open Microsoft.Extensions.Configuration
     open DSharpPlus
     open DSharpPlus.CommandsNext
+    open DSharpPlus.Net
+    open DSharpPlus.Lavalink
 
     let appConfig =
         ConfigurationBuilder()
@@ -31,9 +33,28 @@ module Program =
         let commands = discord.UseCommandsNext(commandsConfig)
         commands.RegisterCommands<BardBot>()
 
+        printfn "Connecting to Discord"
         discord.ConnectAsync()
         |> Async.AwaitTask
         |> Async.RunSynchronously
+
+        printfn "Connecting to Lavalink"
+        let hostname = appConfig.["Lavalink:Hostname"]
+        let port = appConfig.["Lavalink:Port"] |> int
+        let password = appConfig.["Lavalink:Password"]
+
+        let lavalinkEndpoint = ConnectionEndpoint(hostname, port)
+        let lavalinkConfig = LavalinkConfiguration ()
+        lavalinkConfig.Password <- password
+        lavalinkConfig.RestEndpoint <- lavalinkEndpoint
+        lavalinkConfig.SocketEndpoint <- lavalinkEndpoint
+
+        let lavalink = discord.UseLavalink()
+
+        let lavalinkConnection =
+            lavalink.ConnectAsync lavalinkConfig
+            |> Async.AwaitTask
+            |> Async.RunSynchronously
 
         Task.Delay(-1)
         |> Async.AwaitTask
