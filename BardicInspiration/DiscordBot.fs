@@ -25,10 +25,10 @@ type BardBot () =
         AsyncEventHandler<LavalinkGuildConnection, EventArgs.TrackFinishEventArgs>(
             fun (conn: LavalinkGuildConnection) (args: EventArgs.TrackFinishEventArgs) ->
                 unitTask {
-                    printfn "Finished track {args.Track.Title} ({args.Reason})."
+                    printfn $"Finished track {args.Track.Title} ({args.Reason})."
                     match args.Reason with
                     | EventArgs.TrackEndReason.Finished ->
-                        printfn "Looping: restarting track {args.Track.Title}."
+                        printfn $"Looping: restarting track {args.Track.Title}."
                         do! args.Player.PlayAsync(args.Track)
                     | _ -> ignore ()
                     }
@@ -86,4 +86,40 @@ type BardBot () =
             connection.remove_PlaybackFinished(this.OnTrackFinished)
             connection.remove_PlaybackStarted(this.OnTrackStarted)
             do! connection.DisconnectAsync ()
+            }
+
+    [<Command "play">]
+    [<Description "Search and play the requested track">]
+    member this.Play (ctx: CommandContext, [<RemainingText>] search: string) =
+        unitTask {
+            let lavalink = ctx.Client.GetLavalink ()
+            let node =
+                lavalink.ConnectedNodes
+                |> Seq.find (fun node ->
+                    node.Value.ConnectedGuilds.ContainsKey(ctx.Guild.Id)
+                    )
+                |> fun kv -> kv.Value
+            let connection = node.GetGuildConnection(ctx.Guild)
+
+            let! loadResult = node.Rest.GetTracksAsync(search)
+
+            let track = loadResult.Tracks |> Seq.head
+
+            do! connection.PlayAsync(track)
+            }
+
+    [<Command "stop">]
+    [<Description "Stop playing the current track">]
+    member this.Stop (ctx: CommandContext) =
+        unitTask {
+            let lavalink = ctx.Client.GetLavalink ()
+            let node =
+                lavalink.ConnectedNodes
+                |> Seq.find (fun node ->
+                    node.Value.ConnectedGuilds.ContainsKey(ctx.Guild.Id)
+                    )
+                |> fun kv -> kv.Value
+            let connection = node.GetGuildConnection(ctx.Guild)
+
+            do! connection.StopAsync()
             }
