@@ -123,3 +123,35 @@ type BardBot () =
 
             do! connection.StopAsync()
             }
+
+    [<Command "pause">]
+    [<Description "Pause playing the current track">]
+    member this.Pause (ctx: CommandContext) =
+        unitTask {
+            let lavalink = ctx.Client.GetLavalink ()
+            let node =
+                lavalink.ConnectedNodes
+                |> Seq.find (fun node ->
+                    node.Value.ConnectedGuilds.ContainsKey(ctx.Guild.Id)
+                    )
+                |> fun kv -> kv.Value
+            let connection = node.GetGuildConnection(ctx.Guild)
+
+            do! connection.PauseAsync()
+            }
+
+    [<Command "resume">]
+    [<Description "Resume playing the current paused track">]
+    member this.Resume (ctx: CommandContext) =
+        unitTask {
+            let lavalink = ctx.Client.GetLavalink ()
+            let node =
+                lavalink.ConnectedNodes
+                |> Seq.find (fun node ->
+                    node.Value.ConnectedGuilds.ContainsKey(ctx.Guild.Id)
+                    )
+                |> fun kv -> kv.Value
+            let connection = node.GetGuildConnection(ctx.Guild)
+
+            do! connection.ResumeAsync()
+            }
