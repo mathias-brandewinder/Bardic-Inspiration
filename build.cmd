@@ -1,0 +1,1 @@
+dotnet publish ./BardicInspiration --configuration Release --output ./Release
