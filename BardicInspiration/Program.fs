@@ -11,7 +11,7 @@ module Program =
 
     [<EntryPoint>]
     let main argv =
-        printfn "Starting"
+        printfn "Starting."
 
         let token = appConfig.Token
         let config = DiscordConfiguration ()
@@ -26,12 +26,12 @@ module Program =
         let commands = discord.UseCommandsNext(commandsConfig)
         commands.RegisterCommands<BardBot>()
 
-        printfn "Connecting to Discord"
+        printfn "Connecting to Discord."
         discord.ConnectAsync()
         |> Async.AwaitTask
         |> Async.RunSynchronously
 
-        printfn "Connecting to Lavalink"
+        printfn "Connecting to Lavalink."
 
         let lavalink = discord.UseLavalink()
 
@@ -49,7 +49,7 @@ module Program =
             |> Async.AwaitTask
             |> Async.RunSynchronously
 
-        printfn "Ready"
+        printfn "Ready."
 
         Task.Delay(-1)
         |> Async.AwaitTask
