@@ -74,3 +74,16 @@ type BardBot () =
             connection.add_PlaybackFinished(this.OnTrackFinished)
             connection.add_PlaybackStarted(this.OnTrackStarted)
             }
+
+    [<Command "leave">]
+    [<Description "Leave the current voice channel">]
+    member this.Leave (ctx: CommandContext) =
+        unitTask {
+            let channel = ctx.Channel
+            let lavalink = ctx.Client.GetLavalink ()
+            let node = lavalink.ConnectedNodes.Values |> Seq.head
+            let connection = node.GetGuildConnection(channel.Guild)
+            connection.remove_PlaybackFinished(this.OnTrackFinished)
+            connection.remove_PlaybackStarted(this.OnTrackStarted)
+            do! connection.DisconnectAsync ()
+            }
