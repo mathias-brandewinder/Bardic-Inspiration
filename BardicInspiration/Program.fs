@@ -7,7 +7,6 @@ module Program =
     open DSharpPlus.CommandsNext
     open DSharpPlus.Net
     open DSharpPlus.Lavalink
-    open DSharpPlus.AsyncEvents
     open Configuration
 
     [<EntryPoint>]
