@@ -7,6 +7,7 @@ module Program =
     open DSharpPlus.CommandsNext
     open DSharpPlus.Net
     open DSharpPlus.Lavalink
+    open DSharpPlus.AsyncEvents
     open Configuration
 
     [<EntryPoint>]
@@ -17,6 +18,9 @@ module Program =
         let config = DiscordConfiguration ()
         config.Token <- token
         config.TokenType <- TokenType.Bot
+        // TODO: figure out minimal set of intents needed
+        // Note: use ||| to select multiple intents
+        config.Intents <- DiscordIntents.All
 
         let discord = new DiscordClient(config)
 

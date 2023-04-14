@@ -7,7 +7,7 @@ open DSharpPlus.CommandsNext
 open DSharpPlus.CommandsNext.Attributes
 open DSharpPlus.Entities
 open DSharpPlus.Lavalink
-open Emzi0767.Utilities
+open DSharpPlus.AsyncEvents
 
 type BardBot () =
 
