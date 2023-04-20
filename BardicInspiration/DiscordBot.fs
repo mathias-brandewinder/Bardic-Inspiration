@@ -1,7 +1,7 @@
 namespace Archipendulum.BardicInspiration
 
 open System
-open FSharp.Control.Tasks
+open System.Threading.Tasks
 open DSharpPlus
 open DSharpPlus.CommandsNext
 open DSharpPlus.CommandsNext.Attributes
@@ -16,15 +16,16 @@ type BardBot () =
     member this.OnTrackStarted =
         AsyncEventHandler<LavalinkGuildConnection, EventArgs.TrackStartEventArgs>(
             fun (conn: LavalinkGuildConnection) (args: EventArgs.TrackStartEventArgs) ->
-                unitTask {
+                task {
                     printfn $"Starting track {args.Track.Title}."
                     }
+                :> Task
             )
 
     member this.OnTrackFinished =
         AsyncEventHandler<LavalinkGuildConnection, EventArgs.TrackFinishEventArgs>(
             fun (conn: LavalinkGuildConnection) (args: EventArgs.TrackFinishEventArgs) ->
-                unitTask {
+                task {
                     printfn $"Finished track {args.Track.Title} ({args.Reason})."
                     match args.Reason with
                     | EventArgs.TrackEndReason.Finished ->
@@ -32,12 +33,13 @@ type BardBot () =
                         do! args.Player.PlayAsync(args.Track)
                     | _ -> ignore ()
                     }
+                :> Task
             )
 
     [<Command "inspire">]
     [<Description "Cast bardic inspiration on someone!">]
     member this.Inspiration (ctx: CommandContext, [<Description "Who do you want to inspire?">] user: DiscordMember) =
-        unitTask {
+        task {
             do!
                 ctx.TriggerTypingAsync()
 
@@ -51,11 +53,12 @@ type BardBot () =
 
             return ()
             }
+            :> Task
 
     [<Command "join">]
     [<Description "Join the General voice channel">]
     member this.Join (ctx: CommandContext) =
-        unitTask {
+        task {
             // find General voice channel
             let channelID, channel =
                 ctx.Guild.Channels
@@ -74,11 +77,12 @@ type BardBot () =
             connection.add_PlaybackFinished(this.OnTrackFinished)
             connection.add_PlaybackStarted(this.OnTrackStarted)
             }
+            :> Task
 
     [<Command "leave">]
     [<Description "Leave the current voice channel">]
     member this.Leave (ctx: CommandContext) =
-        unitTask {
+        task {
             let channel = ctx.Channel
             let lavalink = ctx.Client.GetLavalink ()
             let node = lavalink.ConnectedNodes.Values |> Seq.head
@@ -87,11 +91,12 @@ type BardBot () =
             connection.remove_PlaybackStarted(this.OnTrackStarted)
             do! connection.DisconnectAsync ()
             }
+            :> Task
 
     [<Command "play">]
     [<Description "Search and play the requested track">]
     member this.Play (ctx: CommandContext, [<RemainingText>] search: string) =
-        unitTask {
+        task {
             let lavalink = ctx.Client.GetLavalink ()
             let node =
                 lavalink.ConnectedNodes
@@ -107,6 +112,7 @@ type BardBot () =
 
             do! connection.PlayAsync(track)
             }
+            :> Task
 
     member private this.FindLavalinkConnection (ctx: CommandContext) =
         let lavalink = ctx.Client.GetLavalink ()
@@ -121,23 +127,26 @@ type BardBot () =
     [<Command "stop">]
     [<Description "Stop playing the current track">]
     member this.Stop (ctx: CommandContext) =
-        unitTask {
+        task {
             let connection = this.FindLavalinkConnection ctx
             do! connection.StopAsync()
             }
+        :> Task
 
     [<Command "pause">]
     [<Description "Pause playing the current track">]
     member this.Pause (ctx: CommandContext) =
-        unitTask {
+        task {
             let connection = this.FindLavalinkConnection ctx
             do! connection.PauseAsync()
             }
+        :> Task
 
     [<Command "resume">]
     [<Description "Resume playing the current paused track">]
     member this.Resume (ctx: CommandContext) =
-        unitTask {
+        task {
             let connection = this.FindLavalinkConnection ctx
             do! connection.ResumeAsync()
             }
+        :> Task
