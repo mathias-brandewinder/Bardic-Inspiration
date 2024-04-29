@@ -2,21 +2,18 @@ namespace Archipendulum.BardicInspiration
 
 module Configuration =
 
+    open System
     open System.IO
     open Microsoft.Extensions.Configuration
 
     [<CLIMutable>]
-    type Lavalink = {
-        Hostname: string
-        Port: int
-        Password: string
+    type Config = {
+        MusicFolder: string
         }
 
-    [<CLIMutable>]
-    type Config = {
-        Token: string
-        Lavalink: Lavalink
-        }
+    let token =
+        "BARDICINSPIRATION_TOKEN"
+        |> Environment.GetEnvironmentVariable
 
     let appConfig =
         ConfigurationBuilder()
