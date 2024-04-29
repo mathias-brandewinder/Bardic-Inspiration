@@ -2,7 +2,6 @@ namespace Archipendulum.BardicInspiration
 
 open System
 open System.IO
-open System.Diagnostics
 open System.Threading.Tasks
 
 open DSharpPlus
@@ -124,7 +123,7 @@ type BardBot () =
                 try
                     let folder =
                         Configuration.appConfig.MusicFolder
-                        |> System.IO.DirectoryInfo
+                        |> DirectoryInfo
 
                     let tracks =
                         folder.EnumerateFiles()
@@ -134,17 +133,16 @@ type BardBot () =
                         |> Seq.toArray
 
                     let index = search |> int
-                    if index < tracks.Length
-                    then tracks.[index].FullName |> Some
+                    if index >= 0 && index < tracks.Length
+                    then tracks.[index] |> Some
                     else None
                 with
                 | _ -> None
 
             match filePath with
             | None -> printfn "no file to play"
-            | Some filePath ->
-
-                do! this.LoopTrack(FileInfo filePath, transmitSink)
+            | Some trackFile ->
+                do! this.LoopTrack(trackFile, transmitSink)
                 printfn $"Stopped looping {filePath}"
             }
             :> Task
@@ -179,12 +177,12 @@ type BardBot () =
         :> Task
 
     [<Command "tracks">]
-    [<Description "Cast bardic inspiration on someone!">]
+    [<Description "List available tracks">]
     member this.Tracks (ctx: CommandContext) =
         task {
             let folder =
                 Configuration.appConfig.MusicFolder
-                |> System.IO.DirectoryInfo
+                |> DirectoryInfo
 
             let tracks =
                 folder.EnumerateFiles()

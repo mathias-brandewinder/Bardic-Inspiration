@@ -5,9 +5,7 @@ module Program =
     open System.Threading.Tasks
     open DSharpPlus
     open DSharpPlus.CommandsNext
-    open DSharpPlus.Net
     open DSharpPlus.VoiceNext
-    open Configuration
 
     [<EntryPoint>]
     let main argv =
